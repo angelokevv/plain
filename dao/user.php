@@ -21,6 +21,40 @@ class UserDAO {
         $stmt->close();
     }
 
+    public function getAll() {
+        $users = [];
+        
+        $sql = "SELECT * FROM users";
+        $result = $this->conn->query($sql);
+        
+        if ($result->num_rows > 0) {
+            while($row = $result->fetch_assoc()) {
+                $users[] = new User($row['id'], $row['username'], $row['image']);
+            }
+        }
+
+        return $users;
+    }
+
+    public function login($username, $password) {
+        $user = null;
+    
+        $sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $username, $password);
+        $stmt->execute();
+    
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $user = new User($row['id'], $row['username'], $row['image']);
+        }
+    
+        $stmt->close();
+    
+        return $user;
+    }
     public function move_uploaded_file($image){
         $sql = "update users set image = ? where id = (select max(id) from users)";
         $stmt = $this->conn->prepare($sql);
@@ -32,34 +66,5 @@ class UserDAO {
         
     }
 
-    public function getAll() {
-        $users = [];
-        
-        $sql = "SELECT * FROM users";
-        $result = $this->conn->query($sql);
-        
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $users[] = new User($row['id'], $row['username']);
-            }
-        }
 
-        return $users;
-    }
-
-    public function login($username, $password) {
-        $user = null;
-        
-        $sql = "SELECT * FROM users where username = '$username' and password='$password'";
-        $result = $this->conn->query($sql);
-        
-        if ($result->num_rows > 0) {
-            while($row = $result->fetch_assoc()) {
-                $user = new User($row['id'], $row['username']);
-                break;
-            }
-        }
-
-        return $user;
-    }
 }

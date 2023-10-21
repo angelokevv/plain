@@ -18,7 +18,7 @@ Register - <a href="/">Home</a><br/><br/>
                 :
             </td>
             <td>
-                <input type="file" name="image" id="image_file" required>
+                <input type="file" name="image" id="image" required>
             </td> 
             
         </tr>
